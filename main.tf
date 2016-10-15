@@ -78,6 +78,10 @@ resource "aws_security_group" "web_inbound_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags {
+    Name        = "${var.environment}-web-inbound-sg"
+  }
 }
 
 resource "aws_security_group" "web_host_sg" {
@@ -112,6 +116,10 @@ resource "aws_security_group" "web_host_sg" {
     to_port     = 0
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags {
+    Name        = "${var.environment}-web-host-sg"
   }
 }
 
@@ -148,5 +156,9 @@ resource "aws_security_group" "app_host_sg" {
     to_port     = 0
     protocol    = "icmp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags {
+    Name        = "${var.environment}-app-host-sg"
   }
 }
