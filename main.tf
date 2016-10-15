@@ -35,6 +35,14 @@ resource "aws_elb" "web" {
   instances = ["${aws_instance.web.*.id}"]
 }
 
+resource "cloudflare_record" "web" {
+    domain = "${var.domain}"
+    name = "${var.domain}"
+    value = "${aws_elb.web.dns_name}"
+    type = "CNAME"
+    ttl = 3600
+}
+
 resource "aws_instance" "app" {
   ami           = "${lookup(var.ami, var.region)}"
   instance_type = "${var.instance_type}"
@@ -54,7 +62,7 @@ resource "aws_instance" "app" {
 }
 
 resource "aws_security_group" "web_inbound_sg" {
-  name        = "${var.environment}-web_inbound"
+  name        = "${var.environment}-web-inbound"
   description = "Allow HTTP from Anywhere"
   vpc_id      = "${data.aws_vpc.environment.id}"
 
@@ -85,7 +93,7 @@ resource "aws_security_group" "web_inbound_sg" {
 }
 
 resource "aws_security_group" "web_host_sg" {
-  name        = "${var.environment}-web_host"
+  name        = "${var.environment}-web-host"
   description = "Allow SSH and HTTP to web hosts"
   vpc_id      = "${data.aws_vpc.environment.id}"
 
@@ -124,7 +132,7 @@ resource "aws_security_group" "web_host_sg" {
 }
 
 resource "aws_security_group" "app_host_sg" {
-  name        = "${var.environment}-app_host"
+  name        = "${var.environment}-app-host"
   description = "Allow App traffic to app hosts"
   vpc_id      = "${data.aws_vpc.environment.id}"
 
