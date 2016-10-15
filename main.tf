@@ -8,25 +8,30 @@ resource "aws_instance" "web" {
   key_name      = "${var.key_name}"
   subnet_id     = "${element(var.public_subnet_ids, 0)}"
   user_data     = "${file("${path.module}/files/web_bootstrap.sh")}"
+
   vpc_security_group_ids = [
-    "${aws_security_group.web_host_sg.id}"
+    "${aws_security_group.web_host_sg.id}",
   ]
+
   tags {
     Name = "${var.environment}-web-${count.index}"
   }
+
   count = 2
 }
 
 resource "aws_elb" "web" {
-  name                = "${var.environment}-web-elb"
-  subnets             = ["${element(var.public_subnet_ids, 0)}"]
-  security_groups     = ["${aws_security_group.web_inbound_sg.id}"]
+  name            = "${var.environment}-web-elb"
+  subnets         = ["${element(var.public_subnet_ids, 0)}"]
+  security_groups = ["${aws_security_group.web_inbound_sg.id}"]
+
   listener {
     instance_port     = 80
     instance_protocol = "http"
     lb_port           = 80
     lb_protocol       = "http"
   }
+
   instances = ["${aws_instance.web.*.id}"]
 }
 
@@ -34,14 +39,17 @@ resource "aws_instance" "app" {
   ami           = "${lookup(var.ami, var.region)}"
   instance_type = "${var.instance_type}"
   key_name      = "${var.key_name}"
-  subnet_id     =  "${element(var.private_subnet_ids, 0)}"
+  subnet_id     = "${element(var.private_subnet_ids, 0)}"
   user_data     = "${file("${path.module}/files/app_bootstrap.sh")}"
+
   vpc_security_group_ids = [
     "${aws_security_group.app_host_sg.id}",
   ]
+
   tags {
     Name = "${var.environment}-app-${count.index}"
   }
+
   count = 2
 }
 
