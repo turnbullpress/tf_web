@@ -37,7 +37,7 @@ resource "aws_elb" "web" {
 
 resource "cloudflare_record" "web" {
     domain = "${var.domain}"
-    name = "${var.domain}"
+    name = "${var.environment}.${var.domain}"
     value = "${aws_elb.web.dns_name}"
     type = "CNAME"
     ttl = 3600
