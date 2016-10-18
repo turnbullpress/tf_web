@@ -6,7 +6,7 @@ resource "aws_instance" "web" {
   ami           = "${lookup(var.ami, var.region)}"
   instance_type = "${var.instance_type}"
   key_name      = "${var.key_name}"
-  subnet_id     = "${element(var.public_subnet_ids, 0)}"
+  subnet_id     = "${var.public_subnet_ids[0]}"
   user_data     = "${file("${path.module}/files/web_bootstrap.sh")}"
 
   vpc_security_group_ids = [
@@ -22,7 +22,7 @@ resource "aws_instance" "web" {
 
 resource "aws_elb" "web" {
   name            = "${var.environment}-web-elb"
-  subnets         = ["${element(var.public_subnet_ids, 0)}"]
+  subnets         = ["${var.public_subnet_ids[0]}"]
   security_groups = ["${aws_security_group.web_inbound_sg.id}"]
 
   listener {
@@ -36,18 +36,18 @@ resource "aws_elb" "web" {
 }
 
 resource "cloudflare_record" "web" {
-    domain = "${var.domain}"
-    name = "${var.environment}.${var.domain}"
-    value = "${aws_elb.web.dns_name}"
-    type = "CNAME"
-    ttl = 3600
+  domain = "${var.domain}"
+  name   = "${var.environment}.${var.domain}"
+  value  = "${aws_elb.web.dns_name}"
+  type   = "CNAME"
+  ttl    = 3600
 }
 
 resource "aws_instance" "app" {
   ami           = "${lookup(var.ami, var.region)}"
   instance_type = "${var.instance_type}"
   key_name      = "${var.key_name}"
-  subnet_id     = "${element(var.private_subnet_ids, 0)}"
+  subnet_id     = "${var.private_subnet_ids[0]}"
   user_data     = "${file("${path.module}/files/app_bootstrap.sh")}"
 
   vpc_security_group_ids = [
@@ -88,7 +88,7 @@ resource "aws_security_group" "web_inbound_sg" {
   }
 
   tags {
-    Name        = "${var.environment}-web-inbound-sg"
+    Name = "${var.environment}-web-inbound-sg"
   }
 }
 
@@ -127,7 +127,7 @@ resource "aws_security_group" "web_host_sg" {
   }
 
   tags {
-    Name        = "${var.environment}-web-host-sg"
+    Name = "${var.environment}-web-host-sg"
   }
 }
 
@@ -167,6 +167,6 @@ resource "aws_security_group" "app_host_sg" {
   }
 
   tags {
-    Name        = "${var.environment}-app-host-sg"
+    Name = "${var.environment}-app-host-sg"
   }
 }
