@@ -18,6 +18,16 @@ variable "domain" {
   description = "The domain of our web service."
 }
 
+variable "web_instance_count" {
+  default = 1
+  description = "The number of Web instances to create"
+}
+
+variable "app_instance_count" {
+  default = 1
+  description = "The number of App instances to create"
+}
+
 provider "cloudflare" {
   email = "${var.cloudflare_email}"
   token = "${var.cloudflare_token}"
@@ -29,6 +39,8 @@ module "web" {
   vpc_id             = "${module.vpc.vpc_id}"
   public_subnet_ids  = "${module.vpc.public_subnet_ids}"
   private_subnet_ids = "${module.vpc.private_subnet_ids}"
+  web_instance_counts = ${var.web_instance_counts}"
+  app_instance_counts = ${var.app_instance_counts}"
   domain             = "${var.domain}"
   region             = "${var.region}"
   key_name           = "${var.key_name}"

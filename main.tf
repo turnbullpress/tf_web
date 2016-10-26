@@ -17,7 +17,7 @@ resource "aws_instance" "web" {
     Name = "${var.environment}-web-${count.index}"
   }
 
-  count = 2
+  count = "${var.web_instance_count}"
 }
 
 resource "aws_elb" "web" {
@@ -58,7 +58,7 @@ resource "aws_instance" "app" {
     Name = "${var.environment}-app-${count.index}"
   }
 
-  count = 2
+  count = "${var.app_instance_count}"
 }
 
 resource "aws_security_group" "web_inbound_sg" {
