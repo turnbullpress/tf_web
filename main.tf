@@ -32,7 +32,7 @@ resource "aws_elb" "web" {
     lb_protocol       = "http"
   }
 
-  instances = "${aws_instance.web.*.id}"
+  instances = ["${aws_instance.web.*.id}"]
 }
 
 resource "cloudflare_record" "web" {
